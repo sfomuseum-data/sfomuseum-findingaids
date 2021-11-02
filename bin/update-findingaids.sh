@@ -1,18 +1,29 @@
 #!/bin/sh
 
-SOURCES=/usr/local/bin/sources
-POPULATE=/usr/local/bin/populate
+SOURCES=`command -v wof-findingaid-sources`
+POPULATE=`command -v wof-findingaid-populate`
 
-SINCE=0
+GIT=`command -v git`
+DATE=`command -v date`
+BC=`command -v bc`
+
+NOW=`${DATE} '+%s'`
+SINCE=$((${NOW} - 86400))	# 24 hours
 
 ${GIT} clone https://github.com/sfomuseum-data/sfomuseum-findingaids.git /usr/local/data/sfomuseum-findingaid
 
-REPOS=`bin/sources -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&updated_since=${SINCE}"`
+REPOS=`${SOURCES} -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&updated_since=${SINCE}"`
+
+if [ "${REPOS}" = "" ]
+then
+    exit
+fi
 
 for REPO in ${REPOS}
 do
     NAME=`basename ${REPO} | sed 's/\.git//g'`
-
+    echo "Update finding aid for ${NAME}"
+    
     PRODUCER_URI="csv://?archive=/usr/local/data/sfomuseum-findingaid/data/${NAME}.db"
 
     if [ "${NAME}" = "sfomuseum-data-whosonfirst" ]
@@ -24,6 +35,7 @@ do
 done
 
 cd /usr/local/data/sfomuseum-findingaid
+git add data
 git commit -m "update finding aids for ${REPOS}"
 git push origin main
 

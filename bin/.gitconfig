@@ -1,0 +1,16 @@
+# https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
+
+[user]
+	name = sfomuseumbot
+	email = devnull@localhost
+
+[core]
+	editor = emacs
+[color]
+	ui = false
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
