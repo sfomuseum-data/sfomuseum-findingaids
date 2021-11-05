@@ -83,11 +83,11 @@ do
     NAME=`basename ${REPO} | sed 's/\.git//g'`
     echo "Update finding aid for ${NAME}"
     
-    PRODUCER_URI="csv://?archive=/usr/local/data/sfomuseum-findingaid/data/${NAME}.db"
+    PRODUCER_URI="csv://?archive=/usr/local/data/sfomuseum-findingaid/data/${NAME}.tar.gz"
 
     if [ "${NAME}" = "sfomuseum-data-whosonfirst" ]
     then
-	PRODUCER_URI="csv://?archive=/usr/local/data/sfomuseum-findingaid/data/${NAME}.db&path-repo=properties.sfomuseum:repo"
+	PRODUCER_URI="csv://?archive=/usr/local/data/sfomuseum-findingaid/data/${NAME}.tar.gz&path-repo=properties.sfomuseum:repo"
     fi
 
     # echo "${POPULATE} -iterator-uri git:///tmp -producer-uri ${PRODUCER_URI} ${REPO}"
