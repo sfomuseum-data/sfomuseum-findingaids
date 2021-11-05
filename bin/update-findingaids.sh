@@ -11,19 +11,25 @@ GIT=`which git`
 DATE=`which date`
 BC=`which bc`
 
-NOW=`${DATE} '+%s'`
-SINCE=$((${NOW} - 86400))	# 24 hours
+OFFSET=86400	# 24 hours
 
 GITHUB_USER="sfomuseum-data"
 
+CUSTOM_REPOS=""
 TOKEN_URI=""
 USAGE=""
 
-while getopts "T:h" opt; do
+while getopts "O:R:T:h" opt; do
     case "$opt" in
         h) 
 	    USAGE=1
+	    ;;
+	O)
+	    OFFSET=$OPTARG
 	    ;;	
+	R)
+	    CUSTOM_REPOS=$OPTARG
+	    ;;
 	T)
 	    TOKEN_URI=$OPTARG
 	    ;;
@@ -49,7 +55,15 @@ then
     exit 1
 fi
 
-REPOS=`${SOURCES} -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&updated_since=${SINCE}"`
+NOW=`${DATE} '+%s'`
+SINCE=$((${NOW} - ${OFFSET}))
+
+if [ "${CUSTOM_REPOS}" = "" ]
+then
+    REPOS=`${SOURCES} -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&updated_since=${SINCE}"`
+else
+    REPOS=$CUSTOM_REPOS
+fi
 
 if [ "${REPOS}" = "" ]
 then
