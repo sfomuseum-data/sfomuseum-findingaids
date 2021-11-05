@@ -60,9 +60,15 @@ SINCE=$((${NOW} - ${OFFSET}))
 
 if [ "${CUSTOM_REPOS}" = "" ]
 then
+    echo "Fetch repos updated since ${SINCE} (offset ${OFFSET} seconds since now)"
     REPOS=`${SOURCES} -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&updated_since=${SINCE}"`
 else
-    REPOS=$CUSTOM_REPOS
+    echo "Update custom repos ${CUSTOM_REPOS}"
+
+    for REPO in ${CUSTOM_REPOS}
+    do
+	REPOS="${REPOS} https://github.com/sfomuseum-data/${REPO}.git"
+    done
 fi
 
 if [ "${REPOS}" = "" ]
@@ -83,7 +89,8 @@ do
     then
 	PRODUCER_URI="csv://?archive=/usr/local/data/sfomuseum-findingaid/data/${NAME}.db&path-repo=properties.sfomuseum:repo"
     fi
-    
+
+    # echo "${POPULATE} -iterator-uri git:///tmp -producer-uri ${PRODUCER_URI} ${REPO}"
     time ${POPULATE} -iterator-uri git:///tmp -producer-uri ${PRODUCER_URI} ${REPO}
 done
 
