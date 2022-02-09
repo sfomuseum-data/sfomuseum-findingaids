@@ -13,7 +13,7 @@ DATE=`which date`
 BC=`which bc`
 
 OFFSET=86400	# 24 hours
-GITHUB_USER="whosonfirst-bot"
+GITHUB_USER="sfomuseum-bot"
 
 CUSTOM_REPOS=""
 TOKEN_URI=""
@@ -75,7 +75,7 @@ SINCE=$((${NOW} - ${OFFSET}))
 if [ "${CUSTOM_REPOS}" = "" ]
 then
     echo "Fetch repos updated since ${SINCE} (offset ${OFFSET} seconds since now)"
-    REPOS=`${SOURCES} -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&exclude=sfomuseum-data-garages-&exclude=sfomuseum-data-checkpoints-&exclude=sfomuseum-data-faa-&updated_since=${SINCE}"`    
+    REPOS=`${SOURCES} -provider-uri "github://sfomuseum-data?prefix=sfomuseum-data-&updated_since=${SINCE}"`    
 else
     echo "Update custom repos ${CUSTOM_REPOS}"
 
@@ -106,7 +106,7 @@ do
     
     ${GIT} clone --depth 1 ${REPO} /usr/local/data/${NAME}
     
-    CSV_URI="csv://?archive=/usr/local/data/whosonfirst-findingaid/data/${NAME}.tar.gz"
+    CSV_URI="csv://?archive=/usr/local/data/sfomuseum-findingaids/data/${NAME}.tar.gz"
     DYNAMODB_URI="awsdynamodb://findingaid?partition_key=id&region=us-west-2&credentials=${CREDENTIALS}"
 
     ENC_CSV_URI=`echo ${CSV_URI} | urlencode -stdin`
