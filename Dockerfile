@@ -25,6 +25,7 @@ RUN apk update && apk upgrade \
 FROM alpine
 
 RUN mkdir /usr/local/data
+RUN mkdir -p /usr/local/sfomuseum/bin
 
 RUN apk update && apk upgrade \
     && apk add git git-lfs
