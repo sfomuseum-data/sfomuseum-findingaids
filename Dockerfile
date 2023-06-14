@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine as gotools
+FROM golang:1.20-alpine as gotools
 
 RUN mkdir /build
 
@@ -8,18 +8,18 @@ RUN apk update && apk upgrade \
     && cd /build \
     && git clone https://github.com/whosonfirst/go-whosonfirst-findingaid.git \
     && cd go-whosonfirst-findingaid \
-    && go build -mod vendor -o /usr/local/bin/wof-findingaid-sources cmd/sources/main.go \
-    && go build -mod vendor -o /usr/local/bin/wof-findingaid-populate cmd/populate/main.go \
-    && go build -mod vendor -o /usr/local/bin/csv2docstore cmd/csv2docstore/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-sources cmd/sources/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-populate cmd/populate/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/csv2docstore cmd/csv2docstore/main.go \
     #
     && git clone https://github.com/sfomuseum/runtimevar.git \
     && cd runtimevar \
-    && go build -mod vendor -o /usr/local/bin/runtimevar cmd/runtimevar/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/runtimevar cmd/runtimevar/main.go \
     && cd && rm -rf /build \
     #
-    && git clone https://github.com/aaronland/go-url-tools.git \
-    && cd go-url-tools \
-    && go build -mod vendor -o /usr/local/bin/urlencode cmd/urlencode/main.go \
+    && git clone https://github.com/aaronland/go-tools.git \
+    && cd go-tools \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/urlencode cmd/urlencode/main.go \
     && cd && rm -rf /build 
     
 FROM alpine
