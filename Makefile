@@ -1,2 +1,2 @@
 docker:
-	docker build -t sfomuseum-data-findingaid .	
+	docker build --no-cache=true -t sfomuseum-data-findingaid .	
