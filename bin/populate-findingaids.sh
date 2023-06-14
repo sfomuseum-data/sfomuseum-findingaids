@@ -1,6 +1,7 @@
 #!/bin/sh
 
-CSV2DOCSTORE=`which csv2docstore`
+BIN=/usr/local/sfomuseum/bin
+CSV2DOCSTORE=${BIN}/wof-findingaid-csv2docstore
 GIT=`which git`
 
 CREDENTIALS="iam:"

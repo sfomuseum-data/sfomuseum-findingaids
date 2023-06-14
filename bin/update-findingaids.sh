@@ -3,14 +3,18 @@
 # update-findingaids.sh -T 'awsparamstore://{PARAM_NAME}?region={REGION}&credentials=session'
 # update-findingaids.sh -T 'constant://?val={TOKEN}'
 
-SOURCES=`which wof-findingaid-sources`
-POPULATE=`which wof-findingaid-populate`
-RUNTIMEVAR=`which runtimevar`
-URLENCODE=`which urlencode`
+BIN=/usr/local/sfomuseum/bin
+
+SOURCES=${BIN}/wof-findingaid-sources
+POPULATE=${BIN}/wof-findingaid-populate
+RUNTIMEVAR=${BIN}/runtimevar
+URLENCODE=${BIN}/urlencode
 
 GIT=`which git`
 DATE=`which date`
 BC=`which bc`
+
+DATA=/usr/local/data
 
 OFFSET=86400	# 24 hours
 GITHUB_USER="sfomuseum-bot"
@@ -21,10 +25,13 @@ USAGE=""
 
 CREDENTIALS="iam:"
 
-while getopts "C:O:R:T:U:h" opt; do
+while getopts "C:D:O:R:T:U:h" opt; do
     case "$opt" in
 	C)
 	    CREDENTIALS=${OPTARG}
+	    ;;
+	D)
+	    DATA=${OPTARG}
 	    ;;
         h) 
 	    USAGE=1
@@ -57,9 +64,9 @@ fi
 
 echo "Update finding aids"
 
-echo "Retrieve GitHub acccess token"
+echo "Retrieve GitHub acccess token w/ ${TOKEN_URI}"
 
-GITHUB_TOKEN=`${RUNTIMEVAR} "${TOKEN_URI}"`
+GITHUB_TOKEN=`${RUNTIMEVAR} -timeout 10 "${TOKEN_URI}"`
 
 if [ "${GITHUB_TOKEN}" = "" ]
 then
@@ -67,7 +74,7 @@ then
     exit 1
 fi
 
-echo "Fetch repositories"
+echo "Fetch repositories in to ${DATA}"
 
 NOW=`${DATE} '+%s'`
 SINCE=$((${NOW} - ${OFFSET}))
@@ -93,7 +100,7 @@ fi
 # Clone the sfomuseum-findingaids repo - we are going to write CSV data to this target
 
 echo "Clone sfomuseum-data/sfomuseum-findingaids as ${GITHUB_USER}"
-${GIT} clone --depth 1 https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/sfomuseum-data/sfomuseum-findingaids.git /usr/local/data/sfomuseum-findingaids
+${GIT} clone --depth 1 https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/sfomuseum-data/sfomuseum-findingaids.git ${DATA}/sfomuseum-findingaids
 
 for REPO in ${REPOS}
 do
@@ -104,9 +111,9 @@ do
     # We may want to revisit the use of the repo:// iterator and instead generate a "filelist"
     # of updated records and iterate over that. For the time being this will do.
     
-    ${GIT} clone --depth 1 ${REPO} /usr/local/data/${NAME}
+    ${GIT} clone --depth 1 ${REPO} ${DATA}/${NAME}
     
-    CSV_URI="csv://?archive=/usr/local/data/sfomuseum-findingaids/data/${NAME}.tar.gz"
+    CSV_URI="csv://?archive=${DATA}/sfomuseum-findingaids/data/${NAME}.tar.gz"
     DYNAMODB_URI="awsdynamodb://findingaid?partition_key=id&region=us-west-2&credentials=${CREDENTIALS}"
 
     ENC_CSV_URI=`echo ${CSV_URI} | urlencode -stdin`
@@ -115,9 +122,9 @@ do
     PRODUCER_URI="multi://?producer=${ENC_CSV_URI}&producer=${ENC_DYNAMODB_URI}"
     echo "Populate w/ {$PRODUCER_URI}"
 
-    time ${POPULATE} -iterator-uri repo:// -producer-uri ${PRODUCER_URI}  /usr/local/data/${NAME}
+    time ${POPULATE} -iterator-uri repo:// -producer-uri ${PRODUCER_URI}  ${DATA}/${NAME}
 
-    rm -rf /usr/local/data/${REPO}
+    rm -rf ${DATA}/${REPO}
     
 done
 
@@ -131,7 +138,7 @@ done
 
 echo "Commit changes"
 
-cd /usr/local/data/sfomuseum-findingaids
+cd ${DATA}/sfomuseum-findingaids
 git pull origin main
 git add data
 git commit -m "update finding aids for ${NAMES}" data

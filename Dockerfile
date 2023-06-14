@@ -8,9 +8,9 @@ RUN apk update && apk upgrade \
     && cd /build \
     && git clone https://github.com/whosonfirst/go-whosonfirst-findingaid.git \
     && cd go-whosonfirst-findingaid \
-    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-sources cmd/sources/main.go \
-    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-populate cmd/populate/main.go \
-    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/csv2docstore cmd/csv2docstore/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-sources cmd/wof-findingaid-sources/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-populate cmd/wof-findingaid-populate/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-csv2docstore cmd/wof-findingaid-csv2docstore/main.go \
     #
     && git clone https://github.com/sfomuseum/runtimevar.git \
     && cd runtimevar \
@@ -29,11 +29,11 @@ RUN mkdir /usr/local/data
 RUN apk update && apk upgrade \
     && apk add git git-lfs
 
-COPY --from=gotools /usr/local/bin/wof-findingaid-sources /usr/local/bin
-COPY --from=gotools /usr/local/bin/wof-findingaid-populate /usr/local/bin
-COPY --from=gotools /usr/local/bin/csv2docstore /usr/local/bin
-COPY --from=gotools /usr/local/bin/runtimevar /usr/local/bin
-COPY --from=gotools /usr/local/bin/urlencode /usr/local/bin
+COPY --from=gotools /usr/local/bin/wof-findingaid-sources /usr/local/sfomuseum/bin
+COPY --from=gotools /usr/local/bin/wof-findingaid-populate /usr/local/sfomuseum/bin
+COPY --from=gotools /usr/local/bin/wof-findingaid-csv2docstore /usr/local/sfomuseum/bin
+COPY --from=gotools /usr/local/bin/runtimevar /usr/local/sfomuseum/bin
+COPY --from=gotools /usr/local/bin/urlencode /usr/local/sfomuseum/bin
 
 COPY bin/update-findingaids.sh /usr/local/bin/update-findingaids.sh
 COPY bin/populate-findingaids.sh /usr/local/bin/populate-findingaids.sh
