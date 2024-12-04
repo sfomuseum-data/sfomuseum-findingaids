@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine as gotools
+FROM golang:1.23-alpine AS gotools
 
 RUN mkdir /build
 
@@ -19,7 +19,7 @@ RUN apk update && apk upgrade \
     #
     && git clone https://github.com/aaronland/go-tools.git \
     && cd go-tools \
-    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/urlencode cmd/urlencode/main.go \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/urlescape cmd/urlescape/main.go \
     && cd && rm -rf /build 
     
 FROM alpine
@@ -34,7 +34,7 @@ COPY --from=gotools /usr/local/bin/wof-findingaid-sources /usr/local/sfomuseum/b
 COPY --from=gotools /usr/local/bin/wof-findingaid-populate /usr/local/sfomuseum/bin
 COPY --from=gotools /usr/local/bin/wof-findingaid-csv2docstore /usr/local/sfomuseum/bin
 COPY --from=gotools /usr/local/bin/runtimevar /usr/local/sfomuseum/bin
-COPY --from=gotools /usr/local/bin/urlencode /usr/local/sfomuseum/bin
+COPY --from=gotools /usr/local/bin/urlescape /usr/local/sfomuseum/bin
 
 COPY bin/update-findingaids.sh /usr/local/bin/update-findingaids.sh
 COPY bin/populate-findingaids.sh /usr/local/bin/populate-findingaids.sh

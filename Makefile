@@ -1,2 +1,2 @@
 docker:
-	docker build --no-cache=true -t sfomuseum-data-findingaid .	
+	docker buildx build --platform=linux/amd64 --no-cache=true -t sfomuseum-data-findingaid .	
