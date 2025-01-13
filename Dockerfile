@@ -3,21 +3,21 @@ FROM golang:1.23-alpine AS gotools
 RUN mkdir /build
 
 RUN apk update && apk upgrade \
-    && apk add git make gcc libc-dev \
-    #
-    && cd /build \
+    && apk add git make gcc libc-dev
+
+RUN cd /build \
     && git clone https://github.com/whosonfirst/go-whosonfirst-findingaid.git \
     && cd go-whosonfirst-findingaid \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-sources cmd/wof-findingaid-sources/main.go \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-populate cmd/wof-findingaid-populate/main.go \
-    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-csv2docstore cmd/wof-findingaid-csv2docstore/main.go \
-    #
-    && git clone https://github.com/sfomuseum/runtimevar.git \
+    && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-csv2docstore cmd/wof-findingaid-csv2docstore/main.go
+
+RUN git clone https://github.com/sfomuseum/runtimevar.git \
     && cd runtimevar \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/runtimevar cmd/runtimevar/main.go \
-    && cd && rm -rf /build \
-    #
-    && git clone https://github.com/aaronland/go-tools.git \
+    && cd && rm -rf /build 
+
+RUN git clone https://github.com/aaronland/go-tools.git \
     && cd go-tools \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/urlescape cmd/urlescape/main.go \
     && cd && rm -rf /build 

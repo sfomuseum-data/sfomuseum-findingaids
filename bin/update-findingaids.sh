@@ -116,8 +116,8 @@ do
     CSV_URI="csv://?archive=${DATA}/sfomuseum-findingaids/data/${NAME}.tar.gz"
     DYNAMODB_URI="awsdynamodb://findingaid?partition_key=id&region=us-west-2&credentials=${CREDENTIALS}"
 
-    ENC_CSV_URI=`echo ${CSV_URI} | urlescape -stdin`
-    ENC_DYNAMODB_URI=`echo ${DYNAMODB_URI} | urlescape -stdin`    
+    ENC_CSV_URI=`echo ${CSV_URI} | ${URLESCAPE} -stdin`
+    ENC_DYNAMODB_URI=`echo ${DYNAMODB_URI} | ${URLESCAPE} -stdin`    
 
     PRODUCER_URI="multi://?producer=${ENC_CSV_URI}&producer=${ENC_DYNAMODB_URI}"
     echo "Populate w/ {$PRODUCER_URI}"
