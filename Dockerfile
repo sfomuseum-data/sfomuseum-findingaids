@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS gotools
+FROM golang:1.25-alpine AS gotools
 
 RUN mkdir /build
 
@@ -9,19 +9,19 @@ RUN apk update && apk upgrade \
 # GODEBUG=asyncpreemptoff=1
 
 RUN cd /build \
-    && git clone https://github.com/whosonfirst/go-whosonfirst-findingaid.git \
+    && git clone --depth 1 https://github.com/whosonfirst/go-whosonfirst-findingaid.git \
     && cd go-whosonfirst-findingaid \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-sources cmd/wof-findingaid-sources/main.go \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-populate cmd/wof-findingaid-populate/main.go \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/wof-findingaid-csv2docstore cmd/wof-findingaid-csv2docstore/main.go
 
 RUN cd /build \
-    && git clone https://github.com/sfomuseum/runtimevar.git \
-    && cd runtimevar \
+    && git clone --depth 1 https://github.com/aaronland/gocloud.git \
+    && cd gocloud \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/runtimevar cmd/runtimevar/main.go 
 
 RUN cd /build \
-    && git clone https://github.com/aaronland/go-tools.git \
+    && git clone --depth 1 https://github.com/aaronland/go-tools.git \
     && cd go-tools \
     && go build -mod vendor -ldflags="-s -w" -o /usr/local/bin/urlescape cmd/urlescape/main.go
 
